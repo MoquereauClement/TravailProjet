@@ -1,14 +1,23 @@
 #ifndef GESTIONNAIRECASIER_H
 #define GESTIONNAIRECASIER_H
 
-
+#include <QFile>
 #include <QWidget>
 #include <QAbstractButton>
 #include <QAbstractItemView>
 #include <QTimer>
 #include <QToolButton>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
 #include <QPushButton>
+#include <QImage>
+#include <QSettings>
+#include <QJsonObject>
+#include <QFileInfo>
+#include <QPixmap>
 #include <QMessageBox>
+#include "accessbdd.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,11 +34,14 @@ public:
     ~GestionnaireCasier();
 
 private slots:
+//Perso
+    void connectButtonsPerso();
+    void RedirectPerso();
+//Styles
+    void Style();
 //Premiere Identification
     //Slots Calculatrice
     void connectButtonsNumeroBadge();
-    void on_toolButton_Valider_clicked();
-    void on_toolButton_Supprimer_clicked();
     void AddNumber();
 
     //Slots Date De Naissance
@@ -39,13 +51,20 @@ private slots:
     void on_TimerPressEventEnd();
     void checkAndUpdateDays();
 //Remplir
-    void setButton();
     void connectButtonsRemplissage();
     void ChoixRemplissage();
-
-
+//Emprunt
+    void connectButtonsEmprunt();
+    void ChoixEmprunt();
+    void RedirectEmprunt();
+//Restitution
+    void connectButtonsRestitution();
+    void RedirectRestitution();
 private:
     QTimer *pressEvent;
+    accessBDD BDD;
+    QToolButton *currentButtonChoixEmprunt;
+    QToolButton *currentButtonRestitution;
     QToolButton *currentButtonNumeroBadge;
     QToolButton *currentButtonDateNaissance;
     QToolButton *currentButtonRemplirCasier = NULL;

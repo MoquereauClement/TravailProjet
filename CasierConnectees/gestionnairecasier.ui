@@ -47,8 +47,8 @@
      <property name="currentIndex">
       <number>2</number>
      </property>
-     <widget class="QWidget" name="Emprunt">
-      <widget class="QLabel" name="label">
+     <widget class="QWidget" name="Admin">
+      <widget class="QLabel" name="label_Image5">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -75,8 +75,126 @@
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
        </property>
-       <property name="pixmap">
-        <pixmap>../../../../../../../../media/cmoquereau/MDL-removebg-preview.png</pixmap>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionEmprunt">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>290</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Emprunt</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionRestitution">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>350</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Restitution</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionFirstTime">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>410</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>FirstTime</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionRemplir">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>230</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Remplir</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>170</y>
+         <width>770</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:white;</string>
+       </property>
+       <property name="text">
+        <string>Bienvenue, passez votre carte devant le lecteur pour continuer.</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Emprunt">
+      <widget class="QLabel" name="label_Image1">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>201</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -130,7 +248,7 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">background-color:orange;</string>
+             <string notr="true">background-color:orange; color:bl;</string>
             </property>
             <property name="text">
              <string>Calculatrice</string>
@@ -326,6 +444,22 @@
         </item>
        </layout>
       </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>330</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retour à l'accueil</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="Restitution">
       <widget class="QToolButton" name="toolButton_RestitutionNon">
@@ -418,7 +552,7 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="label_Image4">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -455,9 +589,25 @@
         <set>Qt::AlignHCenter|Qt::AlignTop</set>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil_4">
+       <property name="geometry">
+        <rect>
+         <x>400</x>
+         <y>40</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retour à l'accueil</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="Remplir">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="label_Image3">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -834,6 +984,22 @@
         <string>Annuler</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil_3">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>40</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retour à l'accueil</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="Premiere">
       <widget class="QLineEdit" name="lineEdit_NumeroBadge">
@@ -1161,7 +1327,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="label_Image2">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -1470,6 +1636,22 @@
          </layout>
         </item>
        </layout>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil_2">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>40</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retour à l'accueil</string>
+       </property>
       </widget>
      </widget>
     </widget>
