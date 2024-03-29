@@ -15,7 +15,9 @@ GestionnaireCasier::GestionnaireCasier(QWidget *parent)
     connectButtonsDateDeNaissance();
     connectButtonsNumeroBadge();
     connectButtonsRemplissage();
- }
+    QDateTime localTime = QDateTime::currentDateTime();
+    qDebug() << "Heure locale :" << localTime.toString();
+}
 
 
 GestionnaireCasier::~GestionnaireCasier()
@@ -39,24 +41,41 @@ void GestionnaireCasier::connectButtonsPerso()
 void GestionnaireCasier::RedirectPerso()
 {
     QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
-    if(pushButton == ui->pushButton_RedirectionEmprunt){
-        ui->stackedWidget->setCurrentIndex(1);
-        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
-        for (int i = 0; i < emplacementMateriel.size(); ++i) {
-            QJsonObject materiel = emplacementMateriel.at(i).toObject();
-            QString nomBouton = materiel["nom"].toString();
-            QString idBouton = materiel["id"].toString();
+    if(BDD.verificationAdherent("152") != ""){
+        idUser = BDD.verificationAdherent("152");
+        qDebug() << idUser;
+        if(pushButton == ui->pushButton_RedirectionEmprunt){
+            ui->stackedWidget->setCurrentIndex(1);
+            QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+            for (int i = 0; i < emplacementMateriel.size(); ++i) {
+                QJsonObject materiel = emplacementMateriel.at(i).toObject();
+                QString nomBouton = materiel["nom"].toString();
+                QString etatBouton = materiel["etat"].toString();
+                QString idCasierBouton = materiel["id_casier"].toString();
 
-            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
-            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Choix_Casier%1").arg(i + 1));
-            if (toolButton) {
-                toolButton->setText(nomBouton);
-                toolButton->setProperty("id", idBouton);
+                // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+                QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Choix_Casier%1").arg(idCasierBouton));
+                if (toolButton) {
+                    // Inclure le nom et l'état dans le setText()
+                    QString buttonText = nomBouton + "\n\n\n" + etatBouton;
+                    toolButton->setText(buttonText);
+                    toolButton->setProperty("id", materiel["id"].toString());
+
+                    // Appliquer la couleur en fonction de l'état
+                    if (etatBouton == "Indisponible") {
+                        toolButton->setStyleSheet("color: red;background-color:orange;");
+                    } else if (etatBouton == "Disponible") {
+                        toolButton->setStyleSheet("color: green;background-color:orange;");
+                    }
+                }
             }
         }
-    }
-    if(pushButton == ui->pushButton_RedirectionFirstTime){
-        ui->stackedWidget->setCurrentIndex(4);
+        if(pushButton == ui->pushButton_RedirectionFirstTime){
+            ui->stackedWidget->setCurrentIndex(4);
+        }
+        if(pushButton == ui->pushButton_RedirectionRestitution){
+            ui->stackedWidget->setCurrentIndex(2);
+        }
     }
     if(pushButton == ui->pushButton_RedirectionRemplir){
         ui->stackedWidget->setCurrentIndex(3);
@@ -75,9 +94,6 @@ void GestionnaireCasier::RedirectPerso()
             connect(button, &QPushButton::clicked, this, &GestionnaireCasier::ChoixRemplissage);
         }
         ui->scrollArea->setWidget(widget);
-    }
-    if(pushButton == ui->pushButton_RedirectionRestitution){
-        ui->stackedWidget->setCurrentIndex(2);
     }
     if(pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_3 || pushButton == ui->pushButton_RedirectionAccueil_4){
         ui->stackedWidget->setCurrentIndex(0);
@@ -138,7 +154,7 @@ void GestionnaireCasier::AddNumber()
         BDD.enregistrementAdherent("123456",id);
         ui->stackedWidget->setCurrentIndex(0);
     }
-     else
+    else
     {
         ui->lineEdit_NumeroBadge->setText(ui->lineEdit_NumeroBadge->text() + currentButtonNumeroBadge->text());
     }

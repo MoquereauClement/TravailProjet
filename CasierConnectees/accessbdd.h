@@ -15,7 +15,7 @@ class accessBDD
 {
 public:
     accessBDD();
-    bool verificationAdherent(QString tag_RFID);
+    QString verificationAdherent(QString tag_RFID);
     QString rechercheFirstTime(QString dateNaissance, QString num_badge);
     bool enregistrementAdherent(QString tag_RFID, QString id);
     QJsonArray emplacementMaterielEmprunter();

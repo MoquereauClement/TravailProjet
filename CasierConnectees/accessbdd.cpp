@@ -18,10 +18,10 @@ accessBDD::accessBDD() {
     }
 }
 
-bool accessBDD::verificationAdherent(QString tag_RFID)
+QString accessBDD::verificationAdherent(QString tag_RFID)
 {
     QSqlQuery requetePreparee;
-    requetePreparee.prepare("select nom,prenom,classe from adherents where :tag_RFID = tag_RFID;");
+    requetePreparee.prepare("select id from adherents where :tag_RFID = tag_RFID;");
     requetePreparee.bindValue(":tag_RFID",tag_RFID);
     if (!requetePreparee.exec())
     {
@@ -30,13 +30,10 @@ bool accessBDD::verificationAdherent(QString tag_RFID)
     else
     {
         if (requetePreparee.next()) {
-
-            return true;
-        } else {
-            return false;
+            QString id = requetePreparee.value(0).toString();
+            return id;
         }
     }
-    return false;
 }
 
 QString accessBDD::rechercheFirstTime(QString dateNaissance, QString num_badge)
@@ -84,13 +81,15 @@ bool accessBDD::enregistrementAdherent(QString tag_RFID, QString id)
 QJsonArray accessBDD::emplacementMaterielEmprunter()
 {
     QJsonArray emplacementMateriel;
-    QSqlQuery requete("select id, nom from materiels where etat = 'Disponible';");
+    QSqlQuery requete("select id, nom, etat, id_casier from materiels where etat = 'Disponible' or etat='Indisponible';");
     if(requete.exec()){
         while(requete.next())
         {
             QJsonObject materiel;
             materiel["id"]=requete.value(0).toString();
             materiel["nom"]=requete.value(1).toString();
+            materiel["etat"]=requete.value(2).toString();
+            materiel["id_casier"]=requete.value(3).toString();
             emplacementMateriel.append(materiel);
         }
     }
@@ -100,7 +99,7 @@ QJsonArray accessBDD::emplacementMaterielEmprunter()
 QJsonArray accessBDD::emplacementMaterielRemplir()
 {
     QJsonArray emplacementMateriel;
-    QSqlQuery requete("select id, nom from materiels where etat = 'En Stock' and id_casier = 1;");
+    QSqlQuery requete("select id, nom from materiels where etat = 'En Stock' and id_casier = NULL;");
     if(requete.exec()){
         while(requete.next())
         {

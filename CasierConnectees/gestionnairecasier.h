@@ -62,6 +62,7 @@ private slots:
     void RedirectRestitution();
 private:
     QTimer *pressEvent;
+    QString idUser;
     accessBDD BDD;
     QToolButton *currentButtonChoixEmprunt;
     QToolButton *currentButtonRestitution;

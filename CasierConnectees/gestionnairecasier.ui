@@ -45,7 +45,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="Admin">
       <widget class="QLabel" name="label_Image5">
@@ -230,10 +230,10 @@
       <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
-         <x>370</x>
-         <y>20</y>
-         <width>316</width>
-         <height>428</height>
+         <x>410</x>
+         <y>0</y>
+         <width>311</width>
+         <height>451</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -1501,6 +1501,9 @@
             <property name="text">
              <string>29</string>
             </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
            </widget>
           </item>
           <item>
@@ -1521,6 +1524,9 @@
             </property>
             <property name="text">
              <string>3</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -1545,6 +1551,9 @@
             </property>
             <property name="text">
              <string>1999</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
