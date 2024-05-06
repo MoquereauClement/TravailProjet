@@ -45,7 +45,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="Admin">
       <widget class="QLabel" name="label_Image5">
@@ -167,6 +167,35 @@
         <string>Bienvenue, passez votre carte devant le lecteur pour continuer.</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionRetirer">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>100</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retirer</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>290</y>
+         <width>113</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange;</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="Emprunt">
       <widget class="QLabel" name="label_Image1">
@@ -232,7 +261,7 @@
         <rect>
          <x>410</x>
          <y>0</y>
-         <width>311</width>
+         <width>316</width>
          <height>451</height>
         </rect>
        </property>
@@ -251,7 +280,7 @@
              <string notr="true">background-color:orange; color:bl;</string>
             </property>
             <property name="text">
-             <string>Calculatrice</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -332,7 +361,7 @@
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>Ballon de foot</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -352,7 +381,7 @@
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>Jeux de société</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -393,7 +422,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QToolButton" name="toolbutton_Choix_Casier11">
+           <widget class="QToolButton" name="toolbutton_Choix_Casier9">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -420,12 +449,12 @@
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>Clé du piano</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="toolbutton_Choix_Casier9">
+           <widget class="QToolButton" name="toolbutton_Choix_Casier11">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -483,10 +512,10 @@
         <string>Non</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_TempsRestitution">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>100</x>
          <y>320</y>
          <width>500</width>
          <height>50</height>
@@ -494,14 +523,14 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>30</pointsize>
+         <pointsize>22</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">color:white;</string>
        </property>
        <property name="text">
-        <string>Il vous reste 2h d'emprunt</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -528,25 +557,25 @@
         <string>Oui</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_ObjetRestitution">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>100</x>
          <y>130</y>
-         <width>655</width>
-         <height>45</height>
+         <width>500</width>
+         <height>50</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>30</pointsize>
+         <pointsize>22</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">color:white;</string>
        </property>
        <property name="text">
-        <string>Voulez-vous restituer votre matériel</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -666,14 +695,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>1</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -687,14 +716,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>2</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -708,14 +737,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>3</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -733,14 +762,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>4</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -767,14 +796,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>5</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -792,14 +821,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>6</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -813,14 +842,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>7</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -834,14 +863,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>8</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -859,14 +888,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>9</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -880,14 +909,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange;</string>
             </property>
             <property name="text">
-             <string>10</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -901,14 +930,14 @@
             </property>
             <property name="font">
              <font>
-              <pointsize>35</pointsize>
+              <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">background-color:orange</string>
             </property>
             <property name="text">
-             <string>11</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -919,9 +948,9 @@
       <widget class="QScrollArea" name="scrollArea">
        <property name="geometry">
         <rect>
-         <x>400</x>
+         <x>410</x>
          <y>10</y>
-         <width>361</width>
+         <width>321</width>
          <height>451</height>
         </rect>
        </property>
@@ -936,7 +965,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>359</width>
+          <width>319</width>
           <height>449</height>
          </rect>
         </property>
@@ -998,6 +1027,299 @@
        </property>
        <property name="text">
         <string>Retour à l'accueil</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="RetirerObjet">
+      <widget class="QWidget" name="layoutWidget_8">
+       <property name="geometry">
+        <rect>
+         <x>410</x>
+         <y>0</y>
+         <width>316</width>
+         <height>451</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_13">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_28">
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier1">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange; color:bl;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier2">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier3">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_29">
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier4">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier5">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_30">
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier6">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier7">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier8">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_31">
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier9">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier10">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="toolbutton_Retirer_Casier11">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color:orange;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QLabel" name="label_Image1_3">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>201</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil_9">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>320</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retour à l'accueil</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>190</y>
+         <width>373</width>
+         <height>33</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>22</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:white;</string>
+       </property>
+       <property name="text">
+        <string>Retirer un matériel du casier</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </widget>

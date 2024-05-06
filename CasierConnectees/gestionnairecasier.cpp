@@ -11,12 +11,18 @@ GestionnaireCasier::GestionnaireCasier(QWidget *parent)
     Style();
     connectButtonsEmprunt();
     connectButtonsRestitution();
+    connectButtonsRetirer();
     connectButtonsPerso();
     connectButtonsDateDeNaissance();
     connectButtonsNumeroBadge();
     connectButtonsRemplissage();
-    QDateTime localTime = QDateTime::currentDateTime();
-    qDebug() << "Heure locale :" << localTime.toString();
+    //timerIDCarte.setSingleShot(true);
+    //connect(&timerIDCarte,&QTimer::timeout,this,&GestionnaireCasier::RecupererIDCarte);
+    //timerIDCarte.start(500);
+    accessGache = new AccesGache(this);
+    imageDownloader = new ImageDownloader(this);
+    connect(imageDownloader, &ImageDownloader::imageDownloaded, this, &GestionnaireCasier::onImageDownloaded);
+    connect(&lecteur, &Wiegand::NouvelleTrame, this, &GestionnaireCasier::on_NouvelleTrame);
 }
 
 
@@ -25,67 +31,158 @@ GestionnaireCasier::~GestionnaireCasier()
     delete ui;
 }
 
-
-void GestionnaireCasier::connectButtonsPerso()
+QString GestionnaireCasier::RecupererIDCarte()
 {
-    connect(ui->pushButton_RedirectionEmprunt, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionFirstTime, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionRemplir, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionRestitution, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionAccueil, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionAccueil_2, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionAccueil_3, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
-    connect(ui->pushButton_RedirectionAccueil_4, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    int bitLen = lecteur.wiegandGetPendingBitCount();
+    if (bitLen == 0)
+        timerIDCarte.start(500);
+    else
+    {
+        char data[100];
+        QByteArray trame;
+        bitLen = lecteur.wiegandReadData((void *)data, 100);
+        int bytes = bitLen / 8 + 1;
+        qDebug() <<  bitLen << " " << bytes;
+        for (int i = 0; i < bytes; i++)
+        {
+            trame.push_back(data[i]);
+        }
+        timerIDCarte.start(500);
+        return trame.toHex().toUpper();
+
+    }
+    return QString();
 }
 
-void GestionnaireCasier::RedirectPerso()
+void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
 {
+    tagRFID = tag_RFID;
     QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
-    if(BDD.verificationAdherent("152") != ""){
-        idUser = BDD.verificationAdherent("152");
-        qDebug() << idUser;
-        if(pushButton == ui->pushButton_RedirectionEmprunt){
-            ui->stackedWidget->setCurrentIndex(1);
-            QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
-            for (int i = 0; i < emplacementMateriel.size(); ++i) {
-                QJsonObject materiel = emplacementMateriel.at(i).toObject();
-                QString nomBouton = materiel["nom"].toString();
-                QString etatBouton = materiel["etat"].toString();
-                QString idCasierBouton = materiel["id_casier"].toString();
-
-                // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
-                QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Choix_Casier%1").arg(idCasierBouton));
-                if (toolButton) {
-                    // Inclure le nom et l'état dans le setText()
-                    QString buttonText = nomBouton + "\n\n\n" + etatBouton;
-                    toolButton->setText(buttonText);
-                    toolButton->setProperty("id", materiel["id"].toString());
-
-                    // Appliquer la couleur en fonction de l'état
-                    if (etatBouton == "Indisponible") {
-                        toolButton->setStyleSheet("color: red;background-color:orange;");
-                    } else if (etatBouton == "Disponible") {
-                        toolButton->setStyleSheet("color: green;background-color:orange;");
-                    }
+    if(BDD.materielEmprunter(BDD.verificationAdherent(tag_RFID)) == -1){
+        idUser = BDD.verificationAdherent(tag_RFID);
+        ui->stackedWidget->setCurrentIndex(1);
+        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        for (int i = 0; i < emplacementMateriel.size(); ++i) {
+            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            QString etatBouton = materiel["etat"].toString();
+            int idCasierBouton = materiel["id_casier"].toInt();
+            QString nomImage = materiel["image"].toString();
+            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Choix_Casier%1").arg(idCasierBouton));
+            if (toolButton) {
+                // Inclure le nom et l'état dans le setText()
+                QString buttonText = nomBouton + "\n" + etatBouton;
+                toolButton->setText(buttonText);
+                toolButton->setProperty("id", materiel["id"].toInt());
+                toolButton->setProperty("id_casier", materiel["id_casier"].toInt());
+                downloadImage(nomImage, toolButton);
+                // Appliquer la couleur en fonction de l'état
+                if (etatBouton == "Indisponible") {
+                    toolButton->setStyleSheet("color: red;background-color:orange;");
+                } else if (etatBouton == "Disponible") {
+                    toolButton->setStyleSheet("color: green;background-color:orange;");
                 }
             }
         }
-        if(pushButton == ui->pushButton_RedirectionFirstTime){
-            ui->stackedWidget->setCurrentIndex(4);
+    }
+    if(BDD.verificationAdherent(tag_RFID) == -1){
+        ui->stackedWidget->setCurrentIndex(5);
+    }
+
+    if(BDD.materielEmprunter(BDD.verificationAdherent(tag_RFID)) != -1){
+        ui->label_ObjetRestitution->clear();
+        ui->label_TempsRestitution->clear();
+        ui->stackedWidget->setCurrentIndex(2);
+        idUser = BDD.verificationAdherent(tag_RFID);
+        qDebug() << QString::number(idUser);
+        QJsonArray emplacementMateriel = BDD.demanderMaterielEmprunter(idUser);
+        QJsonObject materiel = emplacementMateriel.at(0).toObject();
+        ui->label_ObjetRestitution->setText("Voulez-vous restituer l'objet : " + materiel["nom"].toString());
+        ui->label_ObjetRestitution->adjustSize(); // Ajustement de la taille du label
+        idMateriel = materiel["id_materiel"].toInt();
+
+        QDateTime date_emprunt = QDateTime::currentDateTime();
+        QDateTime date_limite = QDateTime::fromString(materiel["date_limite"].toString(), Qt::ISODate);
+        QString datelimiteforce = date_limite.toString("yyyy-MM-dd hh:mm:ss");
+        qDebug() << materiel["nom"].toString() << datelimiteforce;
+        qint64 differenceEnSecondes = date_limite.toSecsSinceEpoch() - date_emprunt.toSecsSinceEpoch();
+        qDebug() << QString::number(differenceEnSecondes);
+
+        // Calcul du nombre total d'heures et de jours
+        int jours = differenceEnSecondes / (24 * 60 * 60);
+        int heures = (differenceEnSecondes % (24 * 60 * 60)) / (60 * 60);
+        int minutes = (differenceEnSecondes % (60 * 60)) / 60;
+
+        QString texteDifference;
+        if (jours > 0) {
+            if (jours == 1) {
+                texteDifference = QString("%1 jour").arg(jours);
+            }
+            else {
+                texteDifference = QString("%1 jours").arg(jours);
+            }
+            if(heures > 0){
+                texteDifference += QString(" %1 heure(s)").arg(heures);
+            }
+            if(minutes > 0){
+                texteDifference += QString(" %1 minute(s)").arg(minutes);
+            }
         }
-        if(pushButton == ui->pushButton_RedirectionRestitution){
-            ui->stackedWidget->setCurrentIndex(2);
+        else
+        {
+            if(heures>0){
+                texteDifference += QString("%1 heure(s)").arg(heures);
+            }
+            if(minutes>0){
+                texteDifference += QString(" %1 minute(s)").arg(minutes);
+            }
+        }
+
+        ui->label_TempsRestitution->setText("Il vous reste : " + texteDifference);
+        ui->label_TempsRestitution->adjustSize(); // Ajustement de la taille du label
+
+    }
+
+
+    if(pushButton == ui->pushButton_RedirectionRetirer){
+        ui->stackedWidget->setCurrentIndex(4);
+        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        for (int i = 0; i < emplacementMateriel.size(); ++i) {
+            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            QString etatBouton = materiel["etat"].toString();
+            int idCasierBouton = materiel["id_casier"].toInt();
+            QString nomImage = materiel["image"].toString();
+
+            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Retirer_Casier%1").arg(idCasierBouton));
+            if (toolButton) {
+                // Inclure le nom et l'état dans le setText()
+                QString buttonText = nomBouton + "\n" + etatBouton;
+                toolButton->setText(buttonText);
+                toolButton->setProperty("id", materiel["id"].toInt());
+                toolButton->setProperty("id_casier", materiel["id_casier"].toInt());
+                downloadImage(nomImage, toolButton);
+
+                // Appliquer la couleur en fonction de l'état
+                if (etatBouton == "Indisponible") {
+                    toolButton->setStyleSheet("color: red;background-color:orange;");
+                } else if (etatBouton == "Disponible") {
+                    toolButton->setStyleSheet("color: green;background-color:orange;");
+                }
+            }
         }
     }
     if(pushButton == ui->pushButton_RedirectionRemplir){
         ui->stackedWidget->setCurrentIndex(3);
-        QJsonArray emplacementMateriel = BDD.emplacementMaterielRemplir();
+        QJsonArray emplacementMaterielRemplir = BDD.emplacementMaterielRemplir();
         QWidget *widget = new QWidget;
         QVBoxLayout *layout = new QVBoxLayout(widget);
-        for (int i = 0; i < emplacementMateriel.size(); ++i) {
-            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+        for (int i = 0; i < emplacementMaterielRemplir.size(); ++i) {
+            QJsonObject materiel = emplacementMaterielRemplir.at(i).toObject();
             QString nomBouton = materiel["nom"].toString();
-            QString idBouton = materiel["id"].toString();
+            int idBouton = materiel["id"].toInt();
 
             QPushButton *button = new QPushButton(nomBouton);
             button->setProperty("id", idBouton);
@@ -94,8 +191,140 @@ void GestionnaireCasier::RedirectPerso()
             connect(button, &QPushButton::clicked, this, &GestionnaireCasier::ChoixRemplissage);
         }
         ui->scrollArea->setWidget(widget);
+
+        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        for (int i = 0; i < emplacementMateriel.size(); ++i) {
+            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            QString etatBouton = materiel["etat"].toString();
+            int idCasierBouton = materiel["id_casier"].toInt();
+            QString nomImage = materiel["image"].toString();
+
+            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Remplir_Casier%1").arg(idCasierBouton));
+            if (toolButton) {
+                // Inclure le nom et l'état dans le setText()
+                QString buttonText = nomBouton + "\n" + etatBouton;
+                toolButton->setText(buttonText);
+                toolButton->setProperty("id", materiel["id"].toInt());
+                toolButton->setProperty("id_casier", materiel["id_casier"].toInt());
+                downloadImage(nomImage, toolButton);
+
+                // Appliquer la couleur en fonction de l'état
+                if (etatBouton == "Indisponible") {
+                    toolButton->setStyleSheet("color: red;background-color:orange;");
+                } else if (etatBouton == "Disponible") {
+                    toolButton->setStyleSheet("color: green;background-color:orange;");
+                }
+            }
+        }
+        for(int i = 1; i <= 11; i++){
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Remplir_Casier%1").arg(i));
+            toolButton->setProperty("id_casier", i);
+        }
     }
-    if(pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_3 || pushButton == ui->pushButton_RedirectionAccueil_4){
+    if(pushButton == ui->pushButton_RedirectionAccueil_9 || pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_3 || pushButton == ui->pushButton_RedirectionAccueil_4){
+        ui->stackedWidget->setCurrentIndex(0);
+    }
+}
+
+
+
+void GestionnaireCasier::connectButtonsPerso()
+{
+    connect(ui->pushButton_RedirectionRemplir, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionRetirer, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionAccueil, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionAccueil_2, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionAccueil_3, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionAccueil_4, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+    connect(ui->pushButton_RedirectionAccueil_9, &QPushButton::clicked,this, &GestionnaireCasier::RedirectPerso);
+}
+
+void GestionnaireCasier::RedirectPerso()
+{
+    QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
+    if(pushButton == ui->pushButton_RedirectionRetirer){
+        ui->stackedWidget->setCurrentIndex(4);
+        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        for (int i = 0; i < emplacementMateriel.size(); ++i) {
+            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            QString etatBouton = materiel["etat"].toString();
+            int idCasierBouton = materiel["id_casier"].toInt();
+            QString nomImage = materiel["image"].toString();
+
+            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Retirer_Casier%1").arg(idCasierBouton));
+            if (toolButton) {
+                // Inclure le nom et l'état dans le setText()
+                QString buttonText = nomBouton + "\n" + etatBouton;
+                toolButton->setText(buttonText);
+                toolButton->setProperty("id", materiel["id"].toInt());
+                toolButton->setProperty("id_casier", materiel["id_casier"].toInt());
+                downloadImage(nomImage, toolButton);
+
+                // Appliquer la couleur en fonction de l'état
+                if (etatBouton == "Indisponible") {
+                    toolButton->setStyleSheet("color: red;background-color:orange;");
+                } else if (etatBouton == "Disponible") {
+                    toolButton->setStyleSheet("color: green;background-color:orange;");
+                }
+            }
+        }
+    }
+    if(pushButton == ui->pushButton_RedirectionRemplir){
+        ui->stackedWidget->setCurrentIndex(3);
+        QJsonArray emplacementMaterielRemplir = BDD.emplacementMaterielRemplir();
+        QWidget *widget = new QWidget;
+        QVBoxLayout *layout = new QVBoxLayout(widget);
+        for (int i = 0; i < emplacementMaterielRemplir.size(); ++i) {
+            QJsonObject materiel = emplacementMaterielRemplir.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            int idBouton = materiel["id"].toInt();
+            QString nomImage = materiel["image"].toString();
+
+            QPushButton *button = new QPushButton(nomBouton);
+            button->setProperty("id", idBouton);
+            layout->addWidget(button);
+
+            connect(button, &QPushButton::clicked, this, &GestionnaireCasier::ChoixRemplissage);
+        }
+        ui->scrollArea->setWidget(widget);
+
+        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        for (int i = 0; i < emplacementMateriel.size(); ++i) {
+            QJsonObject materiel = emplacementMateriel.at(i).toObject();
+            QString nomBouton = materiel["nom"].toString();
+            QString etatBouton = materiel["etat"].toString();
+            int idCasierBouton = materiel["id_casier"].toInt();
+            QString nomImage = materiel["image"].toString();
+
+            // Assurez-vous que votre UI contient des objets QToolButton avec les noms correspondants
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Remplir_Casier%1").arg(idCasierBouton));
+            if (toolButton) {
+                // Inclure le nom et l'état dans le setText()
+                QString buttonText = nomBouton + "\n" + etatBouton;
+                qDebug() << buttonText;
+                toolButton->setText(buttonText);
+                toolButton->setProperty("id", materiel["id"].toInt());
+                toolButton->setProperty("id_casier", materiel["id_casier"].toInt());
+                downloadImage(nomImage, toolButton);
+
+                // Appliquer la couleur en fonction de l'état
+                if (etatBouton == "Indisponible") {
+                    toolButton->setStyleSheet("color: red;background-color:orange;");
+                } else if (etatBouton == "Disponible") {
+                    toolButton->setStyleSheet("color: green;background-color:orange;");
+                }
+            }
+        }
+        for(int i = 1; i <= 11; i++){
+            QToolButton *toolButton = findChild<QToolButton*>(QString("toolbutton_Remplir_Casier%1").arg(i));
+            toolButton->setProperty("id_casier", i);
+        }
+    }
+    if(pushButton == ui->pushButton_RedirectionAccueil_9 || pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_3 || pushButton == ui->pushButton_RedirectionAccueil_4){
         ui->stackedWidget->setCurrentIndex(0);
     }
 }
@@ -125,6 +354,34 @@ void GestionnaireCasier::Style()
     ui->label_Image5->setPixmap(image);
 }
 
+void GestionnaireCasier::downloadImage(QString link, QToolButton *toolButton)
+{
+    QUrl imageUrl("http://172.18.58.49/" + link);
+    imageDownloader->downloadImage(imageUrl, toolButton);
+}
+
+void GestionnaireCasier::onImageDownloaded(const QPixmap &pixmap, QToolButton *toolButton)
+{
+    if (!pixmap.isNull() && toolButton) {
+        QSize buttonSize = toolButton->size();
+        buttonSize.setHeight(buttonSize.height() - 50);
+
+        // Créer une nouvelle icône avec l'image téléchargée
+        QPixmap scaledPixmap = pixmap.scaledToWidth(buttonSize.width());
+        QIcon newIcon(scaledPixmap);
+
+        // Définir l'icône sur le bouton
+        toolButton->setIcon(newIcon);
+        toolButton->setIconSize(buttonSize);
+
+        // Définir le style pour afficher l'icône sous le texte
+        toolButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+
+    } else {
+        qDebug() << "Failed to load image";
+    }
+}
+
 
 void GestionnaireCasier::connectButtonsNumeroBadge()
 {
@@ -146,19 +403,25 @@ void GestionnaireCasier::connectButtonsNumeroBadge()
 void GestionnaireCasier::AddNumber()
 {
     currentButtonNumeroBadge = qobject_cast<QToolButton*>(sender());
-    if(currentButtonNumeroBadge->text() == "←"){
-        ui->lineEdit_NumeroBadge->backspace();
-    }
-    if(currentButtonNumeroBadge->text() == "☑"){
-        QString id = BDD.rechercheFirstTime(ui->lineEdit_Jour->text()+'/'+ui->lineEdit_Mois->text()+'/'+ui->lineEdit_Annee->text(),ui->lineEdit_NumeroBadge->text());
-        BDD.enregistrementAdherent("123456",id);
-        ui->stackedWidget->setCurrentIndex(0);
+    if(currentButtonNumeroBadge->text() == "←" || currentButtonNumeroBadge->text() == "☑"){
+        if(currentButtonNumeroBadge->text() == "←"){
+            ui->lineEdit_NumeroBadge->backspace();
+        }
+        if(currentButtonNumeroBadge->text() == "☑"){
+            QString date_naissance = ui->lineEdit_Jour->text()+'/'+ui->lineEdit_Mois->text()+'/'+ui->lineEdit_Annee->text();
+            qDebug() << date_naissance;
+            int id = BDD.rechercheFirstTime(date_naissance, ui->lineEdit_NumeroBadge->text().toInt());
+            qDebug() << QString::number(id);
+            qDebug() << tagRFID;
+            BDD.enregistrementAdherent(tagRFID,id);
+            ui->stackedWidget->setCurrentIndex(0);
+            ui->lineEdit_NumeroBadge->clear();
+        }
     }
     else
     {
         ui->lineEdit_NumeroBadge->setText(ui->lineEdit_NumeroBadge->text() + currentButtonNumeroBadge->text());
     }
-
 }
 
 void GestionnaireCasier::connectButtonsDateDeNaissance()
@@ -247,6 +510,9 @@ void GestionnaireCasier::on_TimerPressEventEnd()
 
         if (jour < joursDansMois) {
             ui->lineEdit_Jour->setText(QString::number(jour + 1));
+            if(ui->lineEdit_Jour->text().length() == 1){
+                ui->lineEdit_Jour->setText("0" + ui->lineEdit_Jour->text());
+            }
         }
     }
     checkAndUpdateDays();
@@ -275,6 +541,9 @@ void GestionnaireCasier::checkAndUpdateDays() {
     if (jour > joursDansMois) {
         // Si le jour actuel dépasse le nombre de jours dans le mois, le réinitialiser au dernier jour valide
         ui->lineEdit_Jour->setText(QString::number(joursDansMois));
+    }
+    if(ui->lineEdit_Mois->text().length() == 1){
+        ui->lineEdit_Mois->setText("0" + ui->lineEdit_Mois->text());
     }
 }
 
@@ -317,46 +586,68 @@ void GestionnaireCasier::ChoixRemplissage()
 
     // Si le sender est un QPushButton "Valider" ou "Annuler", réactiver le casier et le matériel
     if (pushButton && (pushButton->text() == "Valider" || pushButton->text() == "Annuler")) {
-        if (!currentButtonRemplirCasier || !currentButtonRemplirMateriel) {
-            // Afficher un message si un seul bouton est sélectionné ou aucun bouton n'est sélectionné
-            if (pushButton->text() == "Valider") {
-                if(currentButtonRemplirCasier){
-                    currentButtonRemplirCasier->setEnabled(true);
-                    currentButtonRemplirCasier->setStyleSheet("background-color: orange");
-                    currentButtonRemplirCasier = NULL;
-                }
-                if(currentButtonRemplirMateriel){
-                    currentButtonRemplirMateriel->setEnabled(true);
-                    currentButtonRemplirMateriel->setStyleSheet("background-color: orange");
-                    currentButtonRemplirMateriel = NULL;
-                }
-                QMessageBox::information(this, "Information", "Veuillez sélectionner un bouton casier et un bouton matériel.");
-            }
-            if (pushButton->text() == "Annuler") {
-                if(currentButtonRemplirCasier){
-                    currentButtonRemplirCasier->setEnabled(true);
-                    currentButtonRemplirCasier->setStyleSheet("background-color: orange");
-                    currentButtonRemplirCasier = NULL;
-                }
-                if(currentButtonRemplirMateriel){
-                    currentButtonRemplirMateriel->setEnabled(true);
-                    currentButtonRemplirMateriel->setStyleSheet("background-color: orange");
-                    currentButtonRemplirMateriel = NULL;
-                }
-            }
+        if (currentButtonRemplirCasier && currentButtonRemplirMateriel) {
+            // Exécutez votre action associée à "Valider
+            // Par exemple, vous pouvez appeler une fonction pour traiter les boutons sélectionnés
+            BDD.ajouterObjet(currentButtonRemplirCasier->property("id_casier").toInt(), currentButtonRemplirMateriel->property("id").toInt());
+
+            // Réinitialiser les boutons après avoir traité l'action
+            currentButtonRemplirCasier->setEnabled(true);
+            currentButtonRemplirMateriel->setEnabled(true);
+            currentButtonRemplirCasier->setStyleSheet("background-color: orange");
+            currentButtonRemplirMateriel->setStyleSheet("background-color: orange");
+            currentButtonRemplirCasier = nullptr;
+            currentButtonRemplirMateriel = nullptr;
         } else {
-            if (currentButtonRemplirCasier) {
-                currentButtonRemplirCasier->setEnabled(true);
-                currentButtonRemplirCasier->setStyleSheet("background-color: orange");
-                currentButtonRemplirCasier = NULL;
-            }
-            if (currentButtonRemplirMateriel) {
-                currentButtonRemplirMateriel->setEnabled(true);
-                currentButtonRemplirMateriel->setStyleSheet("background-color: orange");
-                currentButtonRemplirMateriel = NULL;
-            }
+            // Affichez un message si un seul bouton est sélectionné ou aucun bouton n'est sélectionné
+            QMessageBox::information(this, "Information", "Veuillez sélectionner un bouton casier et un bouton matériel.");
         }
     }
+}
+
+void GestionnaireCasier::connectButtonsRetirer()
+{
+    connect(ui->toolbutton_Retirer_Casier1, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier2, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier3, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier4, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier5, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier6, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier7, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier8, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier9, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier10, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+    connect(ui->toolbutton_Retirer_Casier11, &QToolButton::clicked, this, &GestionnaireCasier::ChoixRetirer);
+}
+
+void GestionnaireCasier::ChoixRetirer()
+{
+    currentButtonRetirerObjet = qobject_cast<QToolButton*>(sender());
+    QString toolButtonText = currentButtonRetirerObjet->text();
+    if(toolButtonText.isEmpty() || toolButtonText.contains("Indisponible")){
+        if (toolButtonText.isEmpty()) {
+            QMessageBox::information(this, "Information", "Veuillez sélectionner un matériel valide");
+        }
+        if (toolButtonText.contains("Indisponible")) {
+            QMessageBox::information(this, "Information", "Ce matériel est en cours d'emprunt");
+        }
+    }
+    else
+    {
+        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir retirer " + toolButtonText + " du casier ?", QMessageBox::No | QMessageBox::Yes,this);
+        QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
+        yesButton->setText("Valider");
+        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectRetirer);
+        QAbstractButton *noButton = msgBox.button(QMessageBox::No);
+        noButton->setText("Annuler");
+
+        msgBox.exec();
+    }
+}
+
+void GestionnaireCasier::RedirectRetirer()
+{
+    BDD.retirerObjet(currentButtonRetirerObjet->property("id").toInt());
 }
 
 void GestionnaireCasier::connectButtonsEmprunt()
@@ -369,33 +660,54 @@ void GestionnaireCasier::connectButtonsEmprunt()
     connect(ui->toolbutton_Choix_Casier6, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
     connect(ui->toolbutton_Choix_Casier7, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
     connect(ui->toolbutton_Choix_Casier8, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
-    connect(ui->toolbutton_Choix_Casier9, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
-    connect(ui->toolbutton_Choix_Casier10, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
     connect(ui->toolbutton_Choix_Casier11, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
+    connect(ui->toolbutton_Choix_Casier10, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
+    connect(ui->toolbutton_Choix_Casier9, &QToolButton::clicked, this, &GestionnaireCasier::ChoixEmprunt);
 }
 
 void GestionnaireCasier::ChoixEmprunt()
 {
     currentButtonChoixEmprunt = qobject_cast<QToolButton*>(sender());
-    if(currentButtonChoixEmprunt->text() == ""){
-        QMessageBox::information(this, "Information", "Veuillez sélectionner un matériel valide !");
-    }
-    else
-    {
-        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir emprunter "+currentButtonChoixEmprunt->text()+" ?", QMessageBox::No | QMessageBox::Yes,this);
+    QString toolButtonText = currentButtonChoixEmprunt->text();
+
+    if (toolButtonText.isEmpty() || toolButtonText.contains("Indisponible")) {
+        if (toolButtonText.contains("Indisponible")) {
+            QMessageBox::information(this, "Information", "Ce matériel est déjà emprunté");
+        }
+        if (toolButtonText.isEmpty()) {
+            QMessageBox::information(this, "Information", "Veuillez choisir un materiel disponible !");
+        }
+    } else {
+        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir emprunter " + toolButtonText + " ?", QMessageBox::No | QMessageBox::Yes,this);
         QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
         yesButton->setText("Valider");
-
+        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectEmprunt);
         QAbstractButton *noButton = msgBox.button(QMessageBox::No);
         noButton->setText("Annuler");
+
         msgBox.exec();
-        connect(yesButton, &QAbstractButton::clicked,this,&GestionnaireCasier::RedirectEmprunt);
     }
 }
 
 void GestionnaireCasier::RedirectEmprunt()
 {
+    accessGache->ouvertureGache(currentButtonChoixEmprunt->property("id_casier").toInt());
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    QString DateEmprunt = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
 
+    // Récupérer le nombre d'heures à ajouter
+    int nbHeure = BDD.recupererDureeEmprunt(currentButtonChoixEmprunt->property("id").toInt());
+
+    // Ajouter le nombre d'heures à la date actuelle
+    QDateTime dateLimite = currentDateTime.addSecs(nbHeure * 3600); // Convertir les heures en secondes
+
+    // Formater la date limite dans le format requis
+    QString DateLimiteString = dateLimite.toString("yyyy-MM-dd hh:mm:ss");
+    qDebug() << DateLimiteString + "|" + DateEmprunt;
+    // Lier le matériel avec les dates calculées
+    BDD.lierMateriel(DateEmprunt, DateLimiteString, idUser, currentButtonChoixEmprunt->property("id").toInt());
+    BDD.changementIndisponibilite(currentButtonChoixEmprunt->property("id").toInt());
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 void GestionnaireCasier::connectButtonsRestitution()
@@ -410,8 +722,14 @@ void GestionnaireCasier::RedirectRestitution()
     if(currentButtonRestitution == ui->toolButton_RestitutionNon){
         ui->stackedWidget->setCurrentIndex(0);
     }
-    else
+    if(currentButtonRestitution == ui->toolButton_RestitutionOui)
     {
-
+        accessGache->ouvertureGache(idMateriel);
+        QDateTime currentDateTime = QDateTime::currentDateTime();
+        QString DateRetour= currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
+        qDebug() << DateRetour;
+        BDD.changementDisponiblite(BDD.materielEmprunter(idUser));
+        BDD.updateDateRetour(BDD.recupererIdEmprunts(idUser), DateRetour);
+        ui->stackedWidget->setCurrentIndex(0);
     }
 }

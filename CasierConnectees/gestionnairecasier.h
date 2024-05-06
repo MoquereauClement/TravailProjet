@@ -16,8 +16,12 @@
 #include <QJsonObject>
 #include <QFileInfo>
 #include <QPixmap>
+#include <QString>
 #include <QMessageBox>
+#include "imagedownloader.h"
 #include "accessbdd.h"
+#include "wiegand.h"
+#include "accesgache.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -34,11 +38,16 @@ public:
     ~GestionnaireCasier();
 
 private slots:
+// Indentification
+    QString RecupererIDCarte();
+    void on_NouvelleTrame(QString &tag_RFID);
 //Perso
     void connectButtonsPerso();
     void RedirectPerso();
 //Styles
     void Style();
+    void downloadImage(QString link, QToolButton *toolButton);
+    void onImageDownloaded(const QPixmap &pixmap, QToolButton *toolButton);
 //Premiere Identification
     //Slots Calculatrice
     void connectButtonsNumeroBadge();
@@ -53,6 +62,10 @@ private slots:
 //Remplir
     void connectButtonsRemplissage();
     void ChoixRemplissage();
+//Retirer
+    void connectButtonsRetirer();
+    void ChoixRetirer();
+    void RedirectRetirer();
 //Emprunt
     void connectButtonsEmprunt();
     void ChoixEmprunt();
@@ -60,10 +73,19 @@ private slots:
 //Restitution
     void connectButtonsRestitution();
     void RedirectRestitution();
+
+
 private:
     QTimer *pressEvent;
-    QString idUser;
+    QTimer timerIDCarte;
+    int idUser;
+    int idMateriel;
+    AccesGache *accessGache;
+    ImageDownloader *imageDownloader;
     accessBDD BDD;
+    Wiegand lecteur;
+    QString tagRFID;
+    QToolButton *currentButtonRetirerObjet;
     QToolButton *currentButtonChoixEmprunt;
     QToolButton *currentButtonRestitution;
     QToolButton *currentButtonNumeroBadge;

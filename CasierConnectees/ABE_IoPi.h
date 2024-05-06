@@ -14,6 +14,7 @@
  Required package{
  apt-get install libi2c-dev
  */
+#include <stdint.h>
 
 namespace ABElectronics_CPP_Libraries
 {
