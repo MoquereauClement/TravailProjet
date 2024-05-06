@@ -42,8 +42,8 @@ private slots:
     QString RecupererIDCarte();
     void on_NouvelleTrame(QString &tag_RFID);
 //Perso
-    void connectButtonsPerso();
-    void RedirectPerso();
+    void connectButtonsRedirection();
+    void RedirectAccueil();
 //Styles
     void Style();
     void downloadImage(QString link, QToolButton *toolButton);
@@ -60,9 +60,11 @@ private slots:
     void on_TimerPressEventEnd();
     void checkAndUpdateDays();
 //Remplir
+    void InitialisationRemplir();
     void connectButtonsRemplissage();
     void ChoixRemplissage();
 //Retirer
+    void InitialisationRetirer();
     void connectButtonsRetirer();
     void ChoixRetirer();
     void RedirectRetirer();

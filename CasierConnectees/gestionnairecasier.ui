@@ -45,9 +45,9 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>6</number>
      </property>
-     <widget class="QWidget" name="Admin">
+     <widget class="QWidget" name="Accueil">
       <widget class="QLabel" name="label_Image5">
        <property name="enabled">
         <bool>true</bool>
@@ -82,70 +82,6 @@
         <set>Qt::AlignHCenter|Qt::AlignTop</set>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_RedirectionEmprunt">
-       <property name="geometry">
-        <rect>
-         <x>580</x>
-         <y>290</y>
-         <width>200</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange; color:bl;</string>
-       </property>
-       <property name="text">
-        <string>Emprunt</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_RedirectionRestitution">
-       <property name="geometry">
-        <rect>
-         <x>580</x>
-         <y>350</y>
-         <width>200</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange; color:bl;</string>
-       </property>
-       <property name="text">
-        <string>Restitution</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_RedirectionFirstTime">
-       <property name="geometry">
-        <rect>
-         <x>580</x>
-         <y>410</y>
-         <width>200</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange; color:bl;</string>
-       </property>
-       <property name="text">
-        <string>FirstTime</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_RedirectionRemplir">
-       <property name="geometry">
-        <rect>
-         <x>580</x>
-         <y>230</y>
-         <width>200</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange; color:bl;</string>
-       </property>
-       <property name="text">
-        <string>Remplir</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label">
        <property name="geometry">
         <rect>
@@ -165,35 +101,6 @@
        </property>
        <property name="text">
         <string>Bienvenue, passez votre carte devant le lecteur pour continuer.</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="pushButton_RedirectionRetirer">
-       <property name="geometry">
-        <rect>
-         <x>580</x>
-         <y>100</y>
-         <width>200</width>
-         <height>50</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange; color:bl;</string>
-       </property>
-       <property name="text">
-        <string>Retirer</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>290</y>
-         <width>113</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color:orange;</string>
        </property>
       </widget>
      </widget>
@@ -1982,6 +1889,40 @@
        </property>
        <property name="text">
         <string>Retour à l'accueil</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="PanelAdmin">
+      <widget class="QPushButton" name="pushButton_RedirectionRetirer">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>100</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Retirer</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionRemplir">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>290</y>
+         <width>200</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Remplir</string>
        </property>
       </widget>
      </widget>
