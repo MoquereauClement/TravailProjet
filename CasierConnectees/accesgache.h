@@ -20,8 +20,6 @@ public:
     explicit AccesGache(QObject *parent = nullptr);
     void ouvertureGache(int _numGache);
     void onTimerTimeout();
-    void fermetureComplete();
-
 private:
     int numGache;
     IoPi controlBusSortie;

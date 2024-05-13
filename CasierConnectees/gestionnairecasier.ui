@@ -1202,7 +1202,7 @@
         <string notr="true">background-color:orange; color:bl;</string>
        </property>
        <property name="text">
-        <string>Retour à l'accueil</string>
+        <string>Retour au panneau admin</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_5">
@@ -1234,8 +1234,8 @@
       <widget class="QLineEdit" name="lineEdit_NumeroBadge">
        <property name="geometry">
         <rect>
-         <x>330</x>
-         <y>40</y>
+         <x>350</x>
+         <y>10</y>
          <width>351</width>
          <height>50</height>
         </rect>
@@ -1256,6 +1256,9 @@
         <font>
          <pointsize>17</pointsize>
         </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>BlankCursor</cursorShape>
        </property>
        <property name="styleSheet">
         <string notr="true">background-color:orange; color:bl;</string>
@@ -1279,8 +1282,8 @@
       <widget class="QWidget" name="layoutWidget_3">
        <property name="geometry">
         <rect>
-         <x>390</x>
-         <y>90</y>
+         <x>410</x>
+         <y>60</y>
          <width>242</width>
          <height>328</height>
         </rect>
@@ -1528,27 +1531,6 @@
             </property>
             <property name="text">
              <string>←</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButton_Valider">
-            <property name="minimumSize">
-             <size>
-              <width>75</width>
-              <height>75</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>30</pointsize>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color:orange</string>
-            </property>
-            <property name="text">
-             <string>☑</string>
             </property>
            </widget>
           </item>
@@ -1878,8 +1860,8 @@
       <widget class="QPushButton" name="pushButton_RedirectionAccueil_2">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>40</y>
+         <x>430</x>
+         <y>400</y>
          <width>200</width>
          <height>50</height>
         </rect>
@@ -1889,6 +1871,33 @@
        </property>
        <property name="text">
         <string>Retour à l'accueil</string>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="toolButton_Valider">
+       <property name="geometry">
+        <rect>
+         <x>710</x>
+         <y>390</y>
+         <width>75</width>
+         <height>75</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>75</width>
+         <height>75</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange</string>
+       </property>
+       <property name="text">
+        <string>☑</string>
        </property>
       </widget>
      </widget>
@@ -1923,6 +1932,67 @@
        </property>
        <property name="text">
         <string>Remplir</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>10</y>
+         <width>423</width>
+         <height>53</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>30</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Panneau administrateur</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>190</y>
+         <width>301</width>
+         <height>61</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>22</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:white;</string>
+       </property>
+       <property name="text">
+        <string>Choisissez une option</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_RedirectionAccueil_5">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>390</y>
+         <width>241</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:orange; color:bl;</string>
+       </property>
+       <property name="text">
+        <string>Quitter le panneau administrateur</string>
        </property>
       </widget>
      </widget>

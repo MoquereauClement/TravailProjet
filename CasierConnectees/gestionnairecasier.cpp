@@ -56,16 +56,18 @@ QString GestionnaireCasier::RecupererIDCarte()
 
 void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
 {
+    viderToolButton();
+    ui->toolbutton_Choix_Casier1->setText("");
+    ui->toolbutton_Choix_Casier1->setIcon(QIcon());
     tagRFID = tag_RFID;
-    QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
-    qDebug() << QString::number(BDD.savoirSiAdmin(tag_RFID));
-    if(BDD.savoirSiAdmin(tag_RFID) == 1){
+    qDebug() << QString::number(BDD.verificationAdmin(tag_RFID));
+    if(BDD.verificationAdmin(tag_RFID) == 1){
         ui->stackedWidget->setCurrentIndex(6);
     }
-    if(BDD.materielEmprunter(BDD.verificationAdherent(tag_RFID)) == -1 && BDD.savoirSiAdmin(tag_RFID) != 1){
+    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) == -1 && BDD.verificationAdmin(tag_RFID) != 1){
         idUser = BDD.verificationAdherent(tag_RFID);
         ui->stackedWidget->setCurrentIndex(1);
-        QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+        QJsonArray emplacementMateriel = BDD.recupererMaterielDisponible();
         for (int i = 0; i < emplacementMateriel.size(); ++i) {
             QJsonObject materiel = emplacementMateriel.at(i).toObject();
             QString nomBouton = materiel["nom"].toString();
@@ -94,7 +96,7 @@ void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
         ui->stackedWidget->setCurrentIndex(5);
     }
 
-    if(BDD.materielEmprunter(BDD.verificationAdherent(tag_RFID)) != -1 && BDD.savoirSiAdmin(tag_RFID) != 1){
+    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) != -1 && BDD.verificationAdmin(tag_RFID) != 1){
         ui->label_ObjetRestitution->clear();
         ui->label_TempsRestitution->clear();
         ui->stackedWidget->setCurrentIndex(2);
@@ -149,23 +151,47 @@ void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
     }
 }
 
+void GestionnaireCasier::viderToolButton()
+{
+    QToolButton *toolbutton;
+    for(int i = 1; i < 12 ;i++){
+        toolbutton = findChild<QToolButton*>(QString("toolbutton_Choix_Casier%1").arg(i));
+        toolbutton->setText("");
+        toolbutton->setIcon(QIcon());
+    }
+    for(int i = 1; i < 12 ;i++){
+        toolbutton = findChild<QToolButton*>(QString("toolbutton_Remplir_Casier%1").arg(i));
+        toolbutton->setText("");
+        toolbutton->setIcon(QIcon());
+    }
+    for(int i = 1; i < 12 ;i++){
+        toolbutton = findChild<QToolButton*>(QString("toolbutton_Retirer_Casier%1").arg(i));
+        toolbutton->setText("");
+        toolbutton->setIcon(QIcon());
+    }
+}
+
 
 void GestionnaireCasier::connectButtonsRedirection()
 {
     connect(ui->pushButton_RedirectionRemplir, &QPushButton::clicked,this, &GestionnaireCasier::InitialisationRemplir);
     connect(ui->pushButton_RedirectionRetirer, &QPushButton::clicked,this, &GestionnaireCasier::InitialisationRetirer);
-    connect(ui->pushButton_RedirectionAccueil, &QPushButton::clicked,this, &GestionnaireCasier::RedirectAccueil);
-    connect(ui->pushButton_RedirectionAccueil_2, &QPushButton::clicked,this, &GestionnaireCasier::RedirectAccueil);
-    connect(ui->pushButton_RedirectionAccueil_3, &QPushButton::clicked,this, &GestionnaireCasier::RedirectAccueil);
-    connect(ui->pushButton_RedirectionAccueil_4, &QPushButton::clicked,this, &GestionnaireCasier::RedirectAccueil);
-    connect(ui->pushButton_RedirectionAccueil_9, &QPushButton::clicked,this, &GestionnaireCasier::RedirectAccueil);
+    connect(ui->pushButton_RedirectionAccueil, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
+    connect(ui->pushButton_RedirectionAccueil_2, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
+    connect(ui->pushButton_RedirectionAccueil_3, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
+    connect(ui->pushButton_RedirectionAccueil_4, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
+    connect(ui->pushButton_RedirectionAccueil_9, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
+    connect(ui->pushButton_RedirectionAccueil_5, &QPushButton::clicked,this, &GestionnaireCasier::RedirectionAccueil);
 }
 
-void GestionnaireCasier::RedirectAccueil()
+void GestionnaireCasier::RedirectionAccueil()
 {
     QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
-    if(pushButton == ui->pushButton_RedirectionAccueil_9 || pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_3 || pushButton == ui->pushButton_RedirectionAccueil_4){
+    if(pushButton == ui->pushButton_RedirectionAccueil || pushButton == ui->pushButton_RedirectionAccueil_2 || pushButton == ui->pushButton_RedirectionAccueil_4 || pushButton == ui->pushButton_RedirectionAccueil_5){
         ui->stackedWidget->setCurrentIndex(0);
+    }
+    if(pushButton == ui->pushButton_RedirectionAccueil_9 || pushButton == ui->pushButton_RedirectionAccueil_3){
+        ui->stackedWidget->setCurrentIndex(6);
     }
 }
 
@@ -225,22 +251,22 @@ void GestionnaireCasier::onImageDownloaded(const QPixmap &pixmap, QToolButton *t
 
 void GestionnaireCasier::connectButtonsNumeroBadge()
 {
-    connect(ui->toolButton_Add0, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add1, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add2, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add3, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add4, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add5, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add6, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add7, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add8, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Add9, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Valider, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
-    connect(ui->toolButton_Supprimer, &QToolButton::clicked, this, &GestionnaireCasier::AddNumber);
+    connect(ui->toolButton_Add0, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add1, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add2, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add3, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add4, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add5, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add6, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add7, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add8, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Add9, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Valider, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
+    connect(ui->toolButton_Supprimer, &QToolButton::clicked, this, &GestionnaireCasier::AjoutChiffre);
 }
 
 
-void GestionnaireCasier::AddNumber()
+void GestionnaireCasier::AjoutChiffre()
 {
     currentButtonNumeroBadge = qobject_cast<QToolButton*>(sender());
     if(currentButtonNumeroBadge->text() == "←" || currentButtonNumeroBadge->text() == "☑"){
@@ -250,7 +276,7 @@ void GestionnaireCasier::AddNumber()
         if(currentButtonNumeroBadge->text() == "☑"){
             QString date_naissance = ui->lineEdit_Jour->text()+'/'+ui->lineEdit_Mois->text()+'/'+ui->lineEdit_Annee->text();
             qDebug() << date_naissance;
-            int id = BDD.rechercheFirstTime(date_naissance, ui->lineEdit_NumeroBadge->text().toInt());
+            int id = BDD.recherchePremiereFois(date_naissance, ui->lineEdit_NumeroBadge->text().toInt());
             qDebug() << QString::number(id);
             qDebug() << tagRFID;
             BDD.enregistrementAdherent(tagRFID,id);
@@ -266,32 +292,32 @@ void GestionnaireCasier::AddNumber()
 
 void GestionnaireCasier::connectButtonsDateDeNaissance()
 {
-    connect(ui->toolButton_AnneeMoins, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_AnneeMoins, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_AnneeMoins, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_AnneeMoins, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_AnneeMoins, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 
-    connect(ui->toolButton_AnneePlus, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_AnneePlus, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_AnneePlus, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_AnneePlus, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_AnneePlus, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 
-    connect(ui->toolButton_MoisMoins, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_MoisMoins, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_MoisMoins, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_MoisMoins, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_MoisMoins, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 
-    connect(ui->toolButton_MoisPlus, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_MoisPlus, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_MoisPlus, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_MoisPlus, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_MoisPlus, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 
-    connect(ui->toolButton_JourMoins, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_JourMoins, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_JourMoins, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_JourMoins, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_JourMoins, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 
-    connect(ui->toolButton_JourPlus, &QPushButton::pressed, this, &GestionnaireCasier::RedirectPressEvent);
-    connect(ui->toolButton_JourPlus, &QPushButton::released, this, &GestionnaireCasier::RedirectReleaseEvent);
+    connect(ui->toolButton_JourPlus, &QPushButton::pressed, this, &GestionnaireCasier::on_ToolButtonPressEvent);
+    connect(ui->toolButton_JourPlus, &QPushButton::released, this, &GestionnaireCasier::on_ToolButtonReleaseEvent);
     connect(ui->toolButton_JourPlus, &QPushButton::clicked, this, &GestionnaireCasier::on_TimerPressEventEnd);
 }
 
-void GestionnaireCasier::RedirectPressEvent()
+void GestionnaireCasier::on_ToolButtonPressEvent()
 {
     currentButtonDateNaissance = qobject_cast<QToolButton*>(sender());
     pressEvent = new QTimer(this);
@@ -299,7 +325,7 @@ void GestionnaireCasier::RedirectPressEvent()
     pressEvent->start(150);
 }
 
-void GestionnaireCasier::RedirectReleaseEvent()
+void GestionnaireCasier::on_ToolButtonReleaseEvent()
 {
     pressEvent->stop();
     delete pressEvent;
@@ -390,7 +416,7 @@ void GestionnaireCasier::checkAndUpdateDays() {
 void GestionnaireCasier::InitialisationRemplir()
 {
     ui->stackedWidget->setCurrentIndex(3);
-    QJsonArray emplacementMaterielRemplir = BDD.emplacementMaterielRemplir();
+    QJsonArray emplacementMaterielRemplir = BDD.recupererMaterielEnStock();
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(widget);
     for (int i = 0; i < emplacementMaterielRemplir.size(); ++i) {
@@ -406,7 +432,7 @@ void GestionnaireCasier::InitialisationRemplir()
     }
     ui->scrollArea->setWidget(widget);
 
-    QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+    QJsonArray emplacementMateriel = BDD.recupererMaterielDisponible();
     for (int i = 0; i < emplacementMateriel.size(); ++i) {
         QJsonObject materiel = emplacementMateriel.at(i).toObject();
         QString nomBouton = materiel["nom"].toString();
@@ -461,6 +487,13 @@ void GestionnaireCasier::ChoixRemplissage()
     QPushButton *pushButton = qobject_cast<QPushButton*>(sender());
     QToolButton *toolButton = qobject_cast<QToolButton*>(sender());
 
+    // Vérifier si le toolButton a déjà du texte
+    if (toolButton && !toolButton->text().isEmpty()) {
+        // Afficher un message si le QToolButton a déjà du texte
+        QMessageBox::information(this, "Information", "Ce casier est déjà rempli.");
+        return; // Quitter la fonction car le bouton est déjà rempli
+    }
+
     // Si le sender est un QToolButton et si aucun bouton casier n'est sélectionné
     if (toolButton && !currentButtonRemplirCasier) {
         currentButtonRemplirCasier = toolButton;
@@ -497,10 +530,11 @@ void GestionnaireCasier::ChoixRemplissage()
     }
 }
 
+
 void GestionnaireCasier::InitialisationRetirer()
 {
     ui->stackedWidget->setCurrentIndex(4);
-    QJsonArray emplacementMateriel = BDD.emplacementMaterielEmprunter();
+    QJsonArray emplacementMateriel = BDD.recupererMaterielDisponible();
     for (int i = 0; i < emplacementMateriel.size(); ++i) {
         QJsonObject materiel = emplacementMateriel.at(i).toObject();
         QString nomBouton = materiel["nom"].toString();
@@ -560,7 +594,7 @@ void GestionnaireCasier::ChoixRetirer()
         QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir retirer " + toolButtonText + " du casier ?", QMessageBox::No | QMessageBox::Yes,this);
         QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
         yesButton->setText("Valider");
-        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectRetirer);
+        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectionRetirer);
         QAbstractButton *noButton = msgBox.button(QMessageBox::No);
         noButton->setText("Annuler");
 
@@ -568,9 +602,10 @@ void GestionnaireCasier::ChoixRetirer()
     }
 }
 
-void GestionnaireCasier::RedirectRetirer()
+void GestionnaireCasier::RedirectionRetirer()
 {
     BDD.retirerObjet(currentButtonRetirerObjet->property("id").toInt());
+    viderToolButton();
     InitialisationRetirer();
 }
 
@@ -605,7 +640,7 @@ void GestionnaireCasier::ChoixEmprunt()
         QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir emprunter " + toolButtonText + " ?", QMessageBox::No | QMessageBox::Yes,this);
         QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
         yesButton->setText("Valider");
-        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectEmprunt);
+        connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectionEmprunt);
         QAbstractButton *noButton = msgBox.button(QMessageBox::No);
         noButton->setText("Annuler");
 
@@ -613,7 +648,7 @@ void GestionnaireCasier::ChoixEmprunt()
     }
 }
 
-void GestionnaireCasier::RedirectEmprunt()
+void GestionnaireCasier::RedirectionEmprunt()
 {
     accessGache->ouvertureGache(currentButtonChoixEmprunt->property("id_casier").toInt());
     QDateTime currentDateTime = QDateTime::currentDateTime();
@@ -629,18 +664,18 @@ void GestionnaireCasier::RedirectEmprunt()
     QString DateLimiteString = dateLimite.toString("yyyy-MM-dd hh:mm:ss");
     qDebug() << DateLimiteString + "|" + DateEmprunt;
     // Lier le matériel avec les dates calculées
-    BDD.lierMateriel(DateEmprunt, DateLimiteString, idUser, currentButtonChoixEmprunt->property("id").toInt());
+    BDD.attribuerMateriel(DateEmprunt, DateLimiteString, idUser, currentButtonChoixEmprunt->property("id").toInt());
     BDD.changementIndisponibilite(currentButtonChoixEmprunt->property("id").toInt());
     ui->stackedWidget->setCurrentIndex(0);
 }
 
 void GestionnaireCasier::connectButtonsRestitution()
 {
-    connect(ui->toolButton_RestitutionOui, &QToolButton::clicked, this, &GestionnaireCasier::RedirectRestitution);
-    connect(ui->toolButton_RestitutionNon, &QToolButton::clicked, this, &GestionnaireCasier::RedirectRestitution);
+    connect(ui->toolButton_RestitutionOui, &QToolButton::clicked, this, &GestionnaireCasier::RedirectionRestitution);
+    connect(ui->toolButton_RestitutionNon, &QToolButton::clicked, this, &GestionnaireCasier::RedirectionRestitution);
 }
 
-void GestionnaireCasier::RedirectRestitution()
+void GestionnaireCasier::RedirectionRestitution()
 {
     currentButtonRestitution = qobject_cast<QToolButton*>(sender());
     if(currentButtonRestitution == ui->toolButton_RestitutionNon){
@@ -652,8 +687,8 @@ void GestionnaireCasier::RedirectRestitution()
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString DateRetour= currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
         qDebug() << DateRetour;
-        BDD.changementDisponiblite(BDD.materielEmprunter(idUser));
-        BDD.updateDateRetour(BDD.recupererIdEmprunts(idUser), DateRetour);
+        BDD.changementDisponiblite(BDD.recupererIdMaterielEmprunter(idUser));
+        BDD.ajoutDateRetour(BDD.recupererIdEmprunts(idUser), DateRetour);
         ui->stackedWidget->setCurrentIndex(0);
     }
 }

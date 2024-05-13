@@ -38,7 +38,7 @@ int accessBDD::verificationAdherent(QString tag_RFID)
     return id;
 }
 
-int accessBDD::rechercheFirstTime(QString dateNaissance, int num_badge)
+int accessBDD::recherchePremiereFois(QString dateNaissance, int num_badge)
 {
     int id=-1;
     QSqlQuery requetePreparee;
@@ -77,7 +77,7 @@ bool accessBDD::enregistrementAdherent(QString tag_RFID, int id)
     return retour;
 }
 
-QJsonArray accessBDD::emplacementMaterielEmprunter()
+QJsonArray accessBDD::recupererMaterielDisponible()
 {
     QJsonArray emplacementMateriel;
     QSqlQuery requete("select id, nom, etat, id_casier, image from materiels where etat = 'Disponible' or etat='Indisponible';");
@@ -96,7 +96,7 @@ QJsonArray accessBDD::emplacementMaterielEmprunter()
     return emplacementMateriel;
 }
 
-QJsonArray accessBDD::emplacementMaterielRemplir()
+QJsonArray accessBDD::recupererMaterielEnStock()
 {
     QJsonArray emplacementMateriel;
     QSqlQuery requete("select id, nom from materiels where etat = 'En Stock' and id_casier IS NULL;");
@@ -127,7 +127,7 @@ int accessBDD::recupererDureeEmprunt(int id_materiel)
     return dureeEmprunt;
 }
 
-void accessBDD::lierMateriel(QString date_emprunt, QString date_limite, int id_adherent, int id_materiel)
+void accessBDD::attribuerMateriel(QString date_emprunt, QString date_limite, int id_adherent, int id_materiel)
 {
     QSqlQuery requetePreparee;
     requetePreparee.prepare("insert into emprunts(date_emprunt,date_limite,id_adherent,id_materiel) values(:date_emprunt,:date_limite,:id_adherent,:id_materiel);");
@@ -152,7 +152,7 @@ void accessBDD::changementIndisponibilite(int id_materiel)
     }
 }
 
-int accessBDD::savoirSiAdmin(QString tag_RFID)
+int accessBDD::verificationAdmin(QString tag_RFID)
 {
     int admin=-1;
     QSqlQuery requetePreparee;
@@ -220,7 +220,7 @@ int accessBDD::recupererIdEmprunts(int id_adherent)
     return idEmprunt;
 }
 
-void accessBDD::updateDateRetour(int id_emprunts, QString date_retour)
+void accessBDD::ajoutDateRetour(int id_emprunts, QString date_retour)
 {
     QSqlQuery requetePreparee;
     requetePreparee.prepare("update emprunts set date_retour = :date_retour where id = :id_emprunt");
@@ -232,7 +232,7 @@ void accessBDD::updateDateRetour(int id_emprunts, QString date_retour)
     }
 }
 
-int accessBDD::materielEmprunter(int id_adherent)
+int accessBDD::recupererIdMaterielEmprunter(int id_adherent)
 {
     int materielEmprunter =-1;
     QSqlQuery requetePreparee;

@@ -20,10 +20,3 @@ void AccesGache::onTimerTimeout()
 {
     controlBusSortie.write_pin(numGache,ETEINT);
 }
-
-void AccesGache::fermetureComplete()
-{
-    for(int i = 1; i < 16; i++){
-        controlBusSortie.write_pin(i,ETEINT);
-    }
-}
