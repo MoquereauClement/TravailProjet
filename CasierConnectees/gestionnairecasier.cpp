@@ -514,7 +514,7 @@ void GestionnaireCasier::ChoixRemplissage()
             // Exécutez votre action associée à "Valider
             // Par exemple, vous pouvez appeler une fonction pour traiter les boutons sélectionnés
             BDD.ajouterObjet(currentButtonRemplirCasier->property("id_casier").toInt(), currentButtonRemplirMateriel->property("id").toInt());
-
+            accessGache->ouvertureGache(currentButtonRemplirCasier->property("id_casier").toInt());
             // Réinitialiser les boutons après avoir traité l'action
             currentButtonRemplirCasier->setEnabled(true);
             currentButtonRemplirMateriel->setEnabled(true);
@@ -607,6 +607,7 @@ void GestionnaireCasier::RedirectionRetirer()
     BDD.retirerObjet(currentButtonRetirerObjet->property("id").toInt());
     viderToolButton();
     InitialisationRetirer();
+    accessGache->ouvertureGache(currentButtonRetirerObjet->property("id_casier").toInt());
 }
 
 void GestionnaireCasier::connectButtonsEmprunt()
