@@ -31,34 +31,9 @@ GestionnaireCasier::~GestionnaireCasier()
     delete ui;
 }
 
-QString GestionnaireCasier::RecupererIDCarte()
-{
-    int bitLen = lecteur.wiegandGetPendingBitCount();
-    if (bitLen == 0)
-        timerIDCarte.start(500);
-    else
-    {
-        char data[100];
-        QByteArray trame;
-        bitLen = lecteur.wiegandReadData((void *)data, 100);
-        int bytes = bitLen / 8 + 1;
-        qDebug() <<  bitLen << " " << bytes;
-        for (int i = 0; i < bytes; i++)
-        {
-            trame.push_back(data[i]);
-        }
-        timerIDCarte.start(500);
-        return trame.toHex().toUpper();
-
-    }
-    return QString();
-}
-
 void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
 {
     viderToolButton();
-    ui->toolbutton_Choix_Casier1->setText("");
-    ui->toolbutton_Choix_Casier1->setIcon(QIcon());
     tagRFID = tag_RFID;
     qDebug() << QString::number(BDD.verificationAdmin(tag_RFID));
     if(BDD.verificationAdmin(tag_RFID) == 1){
