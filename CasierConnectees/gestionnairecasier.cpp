@@ -613,7 +613,8 @@ void GestionnaireCasier::ChoixEmprunt()
             QMessageBox::information(this, "Information", "Veuillez choisir un materiel disponible !");
         }
     } else {
-        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir emprunter " + toolButtonText + " ?", QMessageBox::No | QMessageBox::Yes,this);
+        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir emprunter " + 
+                            toolButtonText + " ?", QMessageBox::No | QMessageBox::Yes,this);
         QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
         yesButton->setText("Valider");
         connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectionEmprunt);
