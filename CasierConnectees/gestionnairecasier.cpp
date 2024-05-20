@@ -566,7 +566,8 @@ void GestionnaireCasier::ChoixRetirer()
     }
     else
     {
-        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir retirer " + toolButtonText + " du casier ?", QMessageBox::No | QMessageBox::Yes,this);
+        QMessageBox msgBox(QMessageBox::Question, "Confirmation", "Etes-vous sûr de vouloir retirer " 
+                            + toolButtonText + " du casier ?", QMessageBox::No | QMessageBox::Yes,this);
         QAbstractButton *yesButton = msgBox.button(QMessageBox::Yes);
         yesButton->setText("Valider");
         connect(yesButton, &QAbstractButton::clicked, this, &GestionnaireCasier::RedirectionRetirer);
