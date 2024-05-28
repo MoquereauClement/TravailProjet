@@ -187,7 +187,7 @@ QJsonArray accessBDD::demanderMaterielEmprunter(int id_adherent)
 {
     QJsonArray emplacementMateriel;
     QSqlQuery requetePreparee;
-    requetePreparee.prepare("select nom, date_emprunt, date_limite, materiels.id from emprunts, materiels where materiels.id = emprunts.id_materiel and emprunts.id_adherent = :id_adherent and date_retour IS NULL;");
+    requetePreparee.prepare("select nom, date_emprunt, date_limite, materiels.id, materiels.id_casier from emprunts, materiels where materiels.id = emprunts.id_materiel and emprunts.id_adherent = :id_adherent and date_retour IS NULL;");
     requetePreparee.bindValue(":id_adherent",id_adherent);
     if(requetePreparee.exec())
     {
@@ -198,6 +198,7 @@ QJsonArray accessBDD::demanderMaterielEmprunter(int id_adherent)
             materiel["date_emprunt"]=requetePreparee.value(1).toString();
             materiel["date_limite"]=requetePreparee.value(2).toString();
             materiel["id_materiel"]=requetePreparee.value(3).toInt();
+            materiel["id_casier"]=requetePreparee.value(4).toInt();
             emplacementMateriel.append(materiel);
         }
     }

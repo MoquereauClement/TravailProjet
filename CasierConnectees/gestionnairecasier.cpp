@@ -81,6 +81,7 @@ void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
         ui->label_ObjetRestitution->setText("Voulez-vous restituer l'objet : " + materiel["nom"].toString());
         ui->label_ObjetRestitution->adjustSize(); // Ajustement de la taille du label
         idMateriel = materiel["id_materiel"].toInt();
+        idCasier = materiel["id_casier"].toInt();
 
         QDateTime date_emprunt = QDateTime::currentDateTime();
         QDateTime date_limite = QDateTime::fromString(materiel["date_limite"].toString(), Qt::ISODate);
@@ -661,10 +662,9 @@ void GestionnaireCasier::RedirectionRestitution()
     }
     if(currentButtonRestitution == ui->toolButton_RestitutionOui)
     {
-        accessGache->ouvertureGache(idMateriel);
+        accessGache->ouvertureGache(idCasier);
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString DateRetour= currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-        qDebug() << DateRetour;
         BDD.changementDisponiblite(BDD.recupererIdMaterielEmprunter(idUser));
         BDD.ajoutDateRetour(BDD.recupererIdEmprunts(idUser), DateRetour);
         ui->stackedWidget->setCurrentIndex(0);

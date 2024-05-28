@@ -82,6 +82,7 @@ private:
     QTimer timerIDCarte;
     int idUser;
     int idMateriel;
+    int idCasier;
     AccesGache *accessGache;
     ImageDownloader *imageDownloader;
     accessBDD BDD;
