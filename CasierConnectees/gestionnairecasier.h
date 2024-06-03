@@ -51,8 +51,7 @@ private slots:
     //Slots Calculatrice
     void connectButtonsNumeroBadge();
     void AjoutChiffre();
-
-    //Slots Date De Naissance
+//Slots Date De Naissance
     void connectButtonsDateDeNaissance();
     void on_ToolButtonPressEvent();
     void on_ToolButtonReleaseEvent();
@@ -71,6 +70,7 @@ private slots:
     void connectButtonsEmprunt();
     void ChoixEmprunt();
     void RedirectionEmprunt();
+    void on_timeClearTimeOut();
 //Restitution
     void connectButtonsRestitution();
     void RedirectionRestitution();
@@ -79,6 +79,7 @@ private slots:
 private:
     QTimer *pressEvent;
     QTimer timerIDCarte;
+    QTimer *timerClear;
     int idUser;
     int idMateriel;
     int idCasier;

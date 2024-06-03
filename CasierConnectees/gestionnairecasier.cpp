@@ -18,8 +18,11 @@ GestionnaireCasier::GestionnaireCasier(QWidget *parent)
     connectButtonsRemplissage();
     accessGache = new AccesGache(this);
     imageDownloader = new ImageDownloader(this);
+    timerClear = new QTimer(this);
     connect(imageDownloader, &ImageDownloader::imageDownloaded, this, &GestionnaireCasier::onImageDownloaded);
     connect(&lecteur, &Wiegand::NouvelleTrame, this, &GestionnaireCasier::on_NouvelleTrame);
+    connect(timerClear, &QTimer::timeout,this,&GestionnaireCasier::on_timeClearTimeOut);
+    timerClear->setSingleShot(true);
 }
 
 
@@ -670,6 +673,12 @@ void GestionnaireCasier::RedirectionEmprunt()
     BDD.changementIndisponibilite(currentButtonChoixEmprunt->property("id").toInt());
     ui->stackedWidget->setCurrentIndex(0);
     ui->label_Info->setText("Vous avez jusqu'au "+DateLimiteString);
+    timerClear->start(15000);
+}
+
+void GestionnaireCasier::on_timeClearTimeOut()
+{
+    ui->label_Info->setText("");
 }
 
 void GestionnaireCasier::connectButtonsRestitution()
