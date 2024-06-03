@@ -39,7 +39,6 @@ public:
 
 private slots:
 // Indentification
-    QString RecupererIDCarte();
     void on_NouvelleTrame(QString &tag_RFID);
     void viderToolButton();
     void connectButtonsRedirection();

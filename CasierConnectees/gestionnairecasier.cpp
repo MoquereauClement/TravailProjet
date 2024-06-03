@@ -30,15 +30,17 @@ GestionnaireCasier::~GestionnaireCasier()
 
 void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
 {
-    viderToolButton();
+    if(tag_RFID.length() == 12){
+        viderToolButton();
+    }
     ui->toolbutton_Choix_Casier1->setText("");
     ui->toolbutton_Choix_Casier1->setIcon(QIcon());
     tagRFID = tag_RFID;
     qDebug() << QString::number(BDD.verificationAdmin(tag_RFID));
-    if(BDD.verificationAdmin(tag_RFID) == 1){
+    if(BDD.verificationAdmin(tag_RFID) == 1 && tag_RFID.length() == 12){
         ui->stackedWidget->setCurrentIndex(6);
     }
-    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) == -1 && BDD.verificationAdmin(tag_RFID) != 1){
+    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) == -1 && BDD.verificationAdmin(tag_RFID) != 1 && tag_RFID.length() == 12){
         idUser = BDD.verificationAdherent(tag_RFID);
         ui->stackedWidget->setCurrentIndex(1);
         QJsonArray emplacementMateriel = BDD.recupererMaterielDisponible();
@@ -66,11 +68,11 @@ void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
             }
         }
     }
-    if(BDD.verificationAdherent(tag_RFID) == -1){
+    if(BDD.verificationAdherent(tag_RFID) == -1 && tag_RFID.length() == 12){
         ui->stackedWidget->setCurrentIndex(5);
     }
 
-    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) != -1 && BDD.verificationAdmin(tag_RFID) != 1){
+    if(BDD.recupererIdMaterielEmprunter(BDD.verificationAdherent(tag_RFID)) != -1 && BDD.verificationAdmin(tag_RFID) != 1 && tag_RFID.length() == 12){
         ui->label_ObjetRestitution->clear();
         ui->label_TempsRestitution->clear();
         ui->stackedWidget->setCurrentIndex(2);
@@ -119,8 +121,13 @@ void GestionnaireCasier::on_NouvelleTrame(QString &tag_RFID)
                 texteDifference += QString(" %1 minute(s)").arg(minutes);
             }
         }
-
-        ui->label_TempsRestitution->setText("Il vous reste : " + texteDifference);
+        if(texteDifference == ""){
+            ui->label_TempsRestitution->setText("Vous êtes en retard !");
+        }
+        else
+        {
+            ui->label_TempsRestitution->setText("Il vous reste : " + texteDifference);
+        }
         ui->label_TempsRestitution->adjustSize(); // Ajustement de la taille du label
 
     }
@@ -486,13 +493,13 @@ void GestionnaireCasier::ChoixRemplissage()
         currentButtonRemplirMateriel->setStyleSheet("background-color: grey");
     }
 
-    // Si le sender est un QPushButton "Valider" ou "Annuler", réactiver le casier et le matériel
-    if (pushButton && (pushButton->text() == "Valider" || pushButton->text() == "Annuler")) {
+    // Si le sender est un QPushButton "Valider"
+    if (pushButton && pushButton->text() == "Valider") {
         if (currentButtonRemplirCasier && currentButtonRemplirMateriel) {
             // Exécutez votre action associée à "Valider
-            // Par exemple, vous pouvez appeler une fonction pour traiter les boutons sélectionnés
             BDD.ajouterObjet(currentButtonRemplirCasier->property("id_casier").toInt(), currentButtonRemplirMateriel->property("id").toInt());
             accessGache->ouvertureGache(currentButtonRemplirCasier->property("id_casier").toInt());
+
             // Réinitialiser les boutons après avoir traité l'action
             currentButtonRemplirCasier->setEnabled(true);
             currentButtonRemplirMateriel->setEnabled(true);
@@ -505,6 +512,22 @@ void GestionnaireCasier::ChoixRemplissage()
             // Affichez un message si un seul bouton est sélectionné ou aucun bouton n'est sélectionné
             QMessageBox::information(this, "Information", "Veuillez sélectionner un bouton casier et un bouton matériel.");
         }
+    }
+
+    // Si le sender est un QPushButton "Annuler"
+    if (pushButton && pushButton->text() == "Annuler") {
+        // Réinitialiser les boutons sans effectuer l'action de validation
+        if (currentButtonRemplirCasier) {
+            currentButtonRemplirCasier->setEnabled(true);
+            currentButtonRemplirCasier->setStyleSheet("background-color: orange");
+            currentButtonRemplirCasier = nullptr;
+        }
+        if (currentButtonRemplirMateriel) {
+            currentButtonRemplirMateriel->setEnabled(true);
+            currentButtonRemplirMateriel->setStyleSheet("background-color: orange");
+            currentButtonRemplirMateriel = nullptr;
+        }
+        InitialisationRemplir();
     }
 }
 
@@ -646,6 +669,7 @@ void GestionnaireCasier::RedirectionEmprunt()
     BDD.attribuerMateriel(DateEmprunt, DateLimiteString, idUser, currentButtonChoixEmprunt->property("id").toInt());
     BDD.changementIndisponibilite(currentButtonChoixEmprunt->property("id").toInt());
     ui->stackedWidget->setCurrentIndex(0);
+    ui->label_Info->setText("Vous avez jusqu'au "+DateLimiteString);
 }
 
 void GestionnaireCasier::connectButtonsRestitution()
